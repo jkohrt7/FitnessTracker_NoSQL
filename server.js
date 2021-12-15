@@ -31,7 +31,9 @@ app.get('/api/workouts', (req, res) => {
     Workout.aggregate([
         {$sort: {_id: -1}},
         {$limit: 1},
-        {$addFields: {totalDuration: {$sum: "$exercises.duration"}}}
+        {$addFields: {
+            totalDuration: {$sum: "$exercises.duration"}
+        }}
     ])
     .then(lastDocument => {
         res.json(lastDocument);
@@ -41,12 +43,16 @@ app.get('/api/workouts', (req, res) => {
     });
 })
 
-//GET all workouts. I have no idea why they called this /range, bc it is not a range of any documents.
+//GET all workouts. 
 app.get('/api/workouts/range', (req, res) => {
     Workout.aggregate([
         {$match: {_id : {$exists: true}}},
-        {$addFields: {totalDuration: {$sum: "$exercises.duration"}}}
+        {$addFields: {
+            totalDuration: {$sum: "$exercises.duration"}
+        }}
     ])
+    .sort({_id:-1})
+    .limit(7)
     .then(allWorkouts => {
         res.json(allWorkouts);
     })
